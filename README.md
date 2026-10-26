@@ -131,12 +131,12 @@ async function nativeMessagingPerformanceTest(i = 1, ...rt) {
     ? new Map(rt.map((host) => [host, 0]))
     : new Map([
     ["nm_assemblyscript", 0],
-    // ["nm_bash", 0],
+    ["nm_bash", 0],
     ["nm_bun", 0],
     ["nm_c", 0],
     ["nm_cpp", 0],
     ["nm_d8", 0],
-    // ["nm_llrt", 0], // Uses subprocess to read STDIN
+    ["nm_llrt", 0], // Uses subprocess to read STDIN
     ["nm_nodejs", 0],
     ["nm_python", 0],
     ["nm_qjs", 0],
@@ -169,7 +169,7 @@ async function nativeMessagingPerformanceTest(i = 1, ...rt) {
     ["nm_javy_node_wasi", 0],
     ["nm_qjs_wasi", 0],
     ["nm_dart", 0],
-    ["nm_d", 0],
+    ["nm_d", 0], // Chromium bug, can't find the D host
     ["nm_deno", 0],
     ["nm_dart", 0],
     ["nm_jz", 0]
