@@ -126,18 +126,17 @@ For each Native Messaging host create a host manifest, in the same form as, and 
 where the extension ID `zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz` connects to multiple Native Messaging hosts, e.g., [NativeMessagingHosts](https://github.com/guest271314/NativeMessagingHosts), from the same extension. Then run the script `test_stdin.js` to compare performance between hosts in DevTools Snippets or Console; on the HTML extension page; in background pages; in `ServiceWorker` of the extension
 
 ```devtools
-async function nativeMessagingPerformanceTest(i = 10, ...rt) {
+async function nativeMessagingPerformanceTest(i = 1, ...rt) {
   const runtimes = rt?.length
     ? new Map(rt.map((host) => [host, 0]))
     : new Map([
     ["nm_assemblyscript", 0],
-    ["nm_bash", 0],
+    // ["nm_bash", 0],
     ["nm_bun", 0],
     ["nm_c", 0],
     ["nm_cpp", 0],
     ["nm_d8", 0],
-    ["nm_deno", 0],
-    ["nm_llrt", 0], // Uses subprocess to read STDIN
+    // ["nm_llrt", 0], // Uses subprocess to read STDIN
     ["nm_nodejs", 0],
     ["nm_python", 0],
     ["nm_qjs", 0],
@@ -170,8 +169,12 @@ async function nativeMessagingPerformanceTest(i = 10, ...rt) {
     ["nm_javy_node_wasi", 0],
     ["nm_qjs_wasi", 0],
     ["nm_dart", 0],
+    ["nm_d", 0],
+    ["nm_deno", 0],
+    ["nm_dart", 0],
     ["nm_jz", 0]
   ]);
+  const MAX = 209715*64;
   for (let j = 0; j < i; j++) {
     for (const [runtime] of runtimes) {
       console.log(`${runtime} run no. ${j} of ${i}}`);
@@ -182,8 +185,8 @@ async function nativeMessagingPerformanceTest(i = 10, ...rt) {
         const port = chrome.runtime.connectNative(runtime);
         port.onMessage.addListener((message) => {
           len += message.length;
-          if (len < 209715) return;
-          console.assert(message.length === 209715, {
+          if (len < MAX) return;
+          console.assert(len === MAX, {
             message,
             runtime,
           });
@@ -193,7 +196,7 @@ async function nativeMessagingPerformanceTest(i = 10, ...rt) {
           resolve();
         });
         port.onDisconnect.addListener(() => reject(chrome.runtime.lastError));
-        port.postMessage(new Array(209715));
+        port.postMessage(new Array(MAX));
         // Handle SpiderMonkey, send "\r\n\r\n" to process full message with js
         if (runtime === "nm_spidermonkey") {
           port.postMessage("\r\n\r\n");
@@ -214,10 +217,11 @@ async function nativeMessagingPerformanceTest(i = 10, ...rt) {
   ) => a < b ? -1 : a === b ? 0 : 1);
   console.table(sorted);
 }
+
 await nativeMessagingPerformanceTest(200); // Run each host 200 times
 ```
 
-which will render a table in DevTools showing fastest to slowest average time per host to roundtrip 1 MiB JSON array containing `null` values
+which will render a table in DevTools showing fastest to slowest average time per host to roundtrip 64 MiB JSON array containing `null` values
 
 ```devtools
 0	'nm_d'	0 # Chromium bug can't find D host
