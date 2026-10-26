@@ -1,0 +1,7 @@
+{
+  "name": "nm_jz",
+  "description": "JZ Native Messaging Host",
+  "path": "/ABSOLUTE/PATH/TO/native-messaging-jz/nm_jz.sh",
+  "type": "stdio",
+  "allowed_origins": []
+}
